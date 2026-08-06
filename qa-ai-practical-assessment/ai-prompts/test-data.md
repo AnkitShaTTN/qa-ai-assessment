@@ -217,7 +217,7 @@ PrismStructure/
 
 ---
 
-## Summary
+## Key Learnings
 
 Test data for the Toolshop assessment was defined through three AI-assisted iterations: inventory of required data, classification with sensitive-data rules, and final structuring within the Prism framework.
 
