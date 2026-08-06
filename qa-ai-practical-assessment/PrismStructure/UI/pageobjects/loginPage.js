@@ -1,61 +1,87 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 require("dotenv").config();
 import loggerUtilities from "../../commonUtils/loggerUtil";
+
 class loginPage {
   constructor(page) {
     this.page = page;
     this.log = new loggerUtilities();
-    this.username = page.locator("input[name='email']")
-    this.password = page.locator("#Password")
-    this.loginbtn = page.locator(".loginButton")
-    this.notification = page.locator(".Toastify__toast-body")
-    this.notification_message = page.locator(".message")
-    this.toastmessage = page.locator(".message");
-    this.error = page.locator(".error");
+    this.email = page.getByRole("textbox", { name: /email address/i });
+    this.password = page.getByRole("textbox", { name: /password/i });
+    this.loginBtn = page.getByRole("button", { name: "Login", exact: true });
+    this.loginError = page.getByText(/invalid email or password/i);
+    this.emailError = page.getByTestId("email-error");
+    this.passwordError = page.getByTestId("password-error");
+    this.navMenu = page.getByRole("menubar", { name: /main menu/i });
+    this.navSignOut = page.getByRole("button", { name: "Profile" });
+  }
+
+  async navigateToLoginPage() {
+    const baseUrl = (process.env.BASE_URL || "https://practicesoftwaretesting.com").replace(
+      /\/$/,
+      ""
+    );
+    await this.page.goto(`${baseUrl}/auth/login`);
+    await this.page.getByRole("heading", { name: "Login" }).waitFor({ state: "visible", timeout: 60000 });
+    this.log.logger("Navigated to Toolshop login page");
   }
 
   async goto() {
-    await this.page.goto(process.env.BASE_URL);
-    this.log.logger("Successfully launched the Application");    
+    await this.navigateToLoginPage();
   }
 
-  async loginUser(page, username, password) {
-    await this.username.click();
-    await this.username.fill(username)
+  async enterEmail(email) {
+    await this.email.click();
+    await this.email.fill(email);
+    this.log.logger("Entered email on login page");
+  }
+
+  async enterPassword(password) {
     await this.password.click();
     await this.password.fill(password);
-    await this.loginbtn.click();
+    this.log.logger("Entered password on login page");
+  }
+
+  async clickLogin() {
+    await this.loginBtn.click();
+    this.log.logger("Clicked login submit");
+  }
+
+  async loginWithValidCredentials(email, password) {
+    await this.enterEmail(email);
+    await this.enterPassword(password);
+    await this.clickLogin();
+    this.log.logger("Submitted login with valid credentials");
+  }
+
+  async loginWithInvalidCredentials(email, password) {
+    await this.enterEmail(email);
+    await this.enterPassword(password);
+    await this.clickLogin();
+    this.log.logger("Submitted login with invalid credentials");
+  }
+
+  async verifySuccessfulLogin() {
+    await this.page.waitForURL(/\/account/, { timeout: 60000 });
+    await expect(this.page.getByRole("heading", { name: "My account" })).toBeVisible({
+      timeout: 60000,
+    });
+    await expect(this.navMenu).toBeVisible();
+    await expect(this.navSignOut).toBeVisible();
+    this.log.logger("Verified successful login");
+  }
+
+  async verifyLoginErrorMessage(expectedMessage = "Invalid email or password") {
+    await expect(this.loginError).toBeVisible();
+    await expect(this.loginError).toContainText(expectedMessage);
+    this.log.logger("Verified login error message");
+  }
+
+  /** Backward-compatible alias used by existing Prism UI specs */
+  async loginUser(username, password) {
+    await this.loginWithValidCredentials(username, password);
     this.log.logger("Login Successful");
-    await page.context().storageState({ path: "./storeBrowserState.json" });
   }
-
-  async verifyErrorwithInvalidEmail(username){
-    await this.username.click();
-    await this.username.fill(username);
-    await expect(this.error).toContainText("Please enter a valid Email address.");
-    this.log.logger("Verified email name is invalid ");
-  }
-
-
-  /*function for negative test case to verify incorrect details do not let user login*/
-  async loginUser_Incorrectdetails(page, username, password) {
-    await this.username.click();
-    await this.username.fill(username)
-    await this.password.click();
-    await this.password.fill("Rsdfsfsd@123456");
-    await this.loginbtn.click();
-    expect(await this.notification).toBeVisible();
-    await expect(this.notification_message).toContainText("The Password entered is incorrect.");
-    this.log.logger("Incorrect Password Entered Verified");
-
-  }
-
-  /*function for negative test case to verify incorrect details do not let user login*/
-  async verifyIncorrrectPass_Msg() {
-    const actualerrormessage = await this.toastmessage.textContent();
-    expect(actualerrormessage).toEqual("Account is either inactive or does not exist.");
-    this.log.logger("Error Modal Verified Successfully");
-  }
-
 }
+
 export default { loginPage };

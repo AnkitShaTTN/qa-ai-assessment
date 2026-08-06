@@ -1,0 +1,7 @@
+{
+  "_comment": "Product Search module test data. Reference: FunctionalTestCase.csv TC_SEARCH_001.",
+  "thorHammerSearch": {
+    "searchQuery": "Thor Hammer",
+    "expectedProductName": "Thor Hammer"
+  }
+}

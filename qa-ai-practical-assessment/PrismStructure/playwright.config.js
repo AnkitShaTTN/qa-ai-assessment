@@ -47,6 +47,7 @@ export default defineConfig({
       testMatch: "**/*.spec.js",
       use: {
         browserName: "chromium",
+        channel: "chrome",
         headless: false,
         screenshot: "on",
         video: {

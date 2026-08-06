@@ -1,0 +1,15 @@
+{
+  "_comment": "Reusable registration test data for the Registration module (Practice Software Testing Toolshop). Reference: FunctionalTestCase.csv TC_REG_001. Email and password are generated at runtime for uniqueness.",
+  "validRegistration": {
+    "firstName": "QA",
+    "lastName": "Automation",
+    "dateOfBirth": "1990-05-15",
+    "phone": "1234567890",
+    "street": "Main Street",
+    "houseNumber": "42",
+    "city": "Springfield",
+    "state": "IL",
+    "countryCode": "US",
+    "postalCode": "62701"
+  }
+}
