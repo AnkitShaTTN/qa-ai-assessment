@@ -1,1 +1,23 @@
-
+Test ID,Module,Scenario,Preconditions,Test Steps,Expected Result,Priority,Test Type
+TS-REG-001,Registration,Enable new customer onboarding with valid account data (Positive),User is logged out; dynamically generated unique email available,"1. Navigate to Register.
+2. Enter valid values in all mandatory fields (unique email, valid password, and remaining required profile fields).
+3. Submit the form.","Registration succeeds with a visible success message or redirect to login. New credentials authenticate successfully on first login attempt. No validation errors displayed.",High,Smoke
+TS-LOGIN-001,Login,Authenticate returning customer for protected shopping flows (Positive),Registered user exists; user is logged out,"1. Navigate to Login.
+2. Enter valid registered email and password.
+3. Click Sign in.","User lands on Home (or intended destination). Header shows authenticated state (e.g., customer name/profile menu). Protected pages (e.g., Cart, Checkout) are accessible.",High,Smoke
+TS-SEARCH-001,Product Search,Support product discovery via keyword search (Positive),User on Home/Catalog; target product name/keyword is known,"1. Enter a keyword matching at least one catalog product (e.g., partial product name).
+2. Execute search.",Results list shows one or more matching products. Each visible result contains the keyword (or clear semantic match). Result count is greater than zero.,High,Smoke
+TS-CART-001,Shopping Cart,Capture purchase intent with correct line-item data (Positive),User logged in; in-stock product identified,"1. From product details, add quantity 1 to cart.
+2. Open Cart.
+3. Verify line item and totals.","Cart contains exactly the selected product with quantity 1, correct unit price, and line subtotal = unit price x 1. Cart badge/count increments by 1. Cart grand total equals line subtotal.",High,Smoke
+TS-CHK-001,Checkout,Complete revenue-critical COD purchase through invoice (Positive),User logged in; cart has >=1 item; valid billing/shipping test data prepared,"1. From Cart, proceed to Checkout.
+2. Enter valid required billing/shipping fields.
+3. Select Cash on Delivery (or demo COD option).
+4. Click Confirm once, then click Confirm again (known behavior).
+5. Open generated invoice/order receipt.","Order confirmation is displayed after second Confirm. Invoice/receipt is accessible with unique invoice/order ID. Invoice lists correct product name, quantity, unit price, and grand total matching pre-checkout cart values.",High,Smoke
+TS-LOGIN-002,Login,Block access with invalid credentials (Negative),User is logged out,"1. Navigate to Login.
+2. Enter valid email with wrong password (or unregistered email).
+3. Click Sign in.",Login fails. Error message states invalid credentials (or equivalent). User remains on Login; session is not created; Cart/Checkout remain protected.,High,Regression
+TS-CHK-003,Checkout,Enforce mandatory checkout field validation (Validation),User logged in; cart has >=1 item; Checkout page open,"1. Clear or leave one or more mandatory checkout fields empty (e.g., address, city, postal code).
+2. Select payment method.
+3. Click Confirm.",Checkout is blocked. Field-level validation errors identify missing/invalid required inputs. No order confirmation and no invoice are generated.,High,Regression
