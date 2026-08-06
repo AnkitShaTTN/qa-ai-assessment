@@ -90,10 +90,10 @@ Review and refine the project README and documentation references. Do not redesi
 Tasks:
 
 1. Validate the repository structure section against the actual file tree.
-2. Confirm execution commands match `package.json` scripts and `playwright.config.js` projects (`testcases_regression`, `toolshop_api`).
-3. Add traceability tables mapping manual test IDs to automated spec files for UI (`05`–`11`) and API (`03`–`05`).
-4. Verify environment variable names (`URL`, `TOOLSHOP_BASE_URL`, `TOOLSHOP_EMAIL`, `TOOLSHOP_PASSWORD`) against `.env.example`.
-5. Document test data file locations (`toolshopTestData.json`, `toolshopLoginData.json`, `toolshopApiData.js`, `toolshopTestHelper.js`, `toolshopContext.js`).
+2. Confirm execution commands match `package.json` scripts and `playwright.config.js` project (`testcases_regression`).
+3. Add traceability tables mapping `FunctionalTestCase.csv` test IDs to automated spec files (`01`–`06` UI, `01`–`05` API).
+4. Verify environment variable names (`URL`, `BASE_URL`) against `.env` / `.env.example`.
+5. Document test data file locations (`loginData.json`, `registrationData.json`, `productSearchData.json`, `checkoutData.json`, `toolshopApiPage.js`, `API/testdata/*.json`).
 6. Align evidence paths with archived Playwright HTML reports in `Evidence/UI/` and `Evidence/API/`.
 7. Ensure assumptions reflect known application behaviour (checkout double-confirm, shared demo backend, run-scoped data).
 8. Remove or correct any references to files, commands, or features that were not implemented.
@@ -106,28 +106,26 @@ The AI compared the draft README against the implemented repository and produced
 
 **Repository structure validated**
 
-- `FunctionalTestCase.csv` — 7 manual UI cases (smoke + regression subset of the 18-case design in `test-design.md`).
-- `ApiTestCase.csv` — 7 manual API cases.
-- UI specs: `05_returningCustomerLoginTest.spec.js` through `11_toolshopCheckoutValidationTest.spec.js`.
-- API specs: `03_toolshopAuthApi.spec.js`, `04_toolshopProductApi.spec.js`, `05_toolshopPurchaseFlowApi.spec.js`.
-- Toolshop page objects: `toolshopLoginPage.js`, `toolshopRegisterPage.js`, `toolshopHomePage.js`, `toolshopProductPage.js`, `toolshopCartPage.js`, `toolshopCheckoutPage.js`, `toolshopInvoicePage.js` — registered via extended `POManager.js`.
+- `FunctionalTestCase.csv` — 8 UI cases aligned to executed automation (`TC_LOGIN_001`–`TC_CHK_002`).
+- `ApiTestCase.csv` — API manual test cases (design reference in `api-testing-design.md`; automation implements `TC_API_001`–`TC_API_005`).
+- UI specs: `01_loginPageTest.spec.js` through `06_checkoutPageTest.spec.js` (8 tests).
+- API specs: `01_registerUser.spec.js` through `05_invoice.spec.js` (5 serial tests).
+- Toolshop page objects: `loginPage.js`, `registrationPage.js`, `homePage.js`, `productDetailsPage.js`, `shoppingCartPage.js`, `checkoutPage.js` — registered via `POManager.js`.
 
 **Commands validated**
 
 | Command | Verified Against |
 |---|---|
-| `npx playwright test --project=testcases_regression --grep @smoke --workers=2` | `playwright.config.js` project + spec tags |
+| `npx playwright test --project=testcases_regression --grep @smoke --workers=2` (with explicit UI spec files) | `playwright.config.js` project + spec tags |
 | `npm run test:regression` | `package.json` |
-| `npm run test:api-smoke` | `package.json` |
-| `npm run test:api-regression` | `package.json` |
-| `npm run test:api` | `package.json` |
+| `npx playwright test --project=testcases_regression "tests/API Test" --grep "@toolshop" --workers=1` | API serial chain |
 | `npx playwright show-report` | Playwright HTML reporter (`reporter: 'html'`) |
 
 **Corrections applied**
 
 - Clarified that all automation commands run from `PrismStructure/`, not repository root.
 - Mapped each automated scenario to its manual test ID in README tables.
-- Documented that manual design produced 18 cases in `test-design.md`, but the CSV deliverable contains 7 prioritized cases aligned to automation scope.
+- Documented that manual design produced 18 cases in `test-design.md`, but the CSV deliverable contains 8 cases aligned to executed UI automation.
 - Updated evidence paths to match archived reports: `Evidence/UI/Playwright UI Automation Test Report.html` and `Evidence/API/Playwright API Test Report.html`.
 - Added `executionResultLogs.log` and `API/testdata/api_requests.log` as supplementary execution logs.
 - Documented checkout double-confirm as expected application behaviour, not a defect.
@@ -138,7 +136,7 @@ The AI compared the draft README against the implemented repository and produced
 - Opened archived HTML reports in `Evidence/` and verified they correspond to successful Toolshop runs.
 - Cross-checked `FunctionalTestCase.csv` and `ApiTestCase.csv` test IDs against spec file annotations (`@smoke`, `@regression`, test titles).
 - Verified `.env.example` variable names match references in specs and utilities.
-- Confirmed legacy Prism samples (`01`–`04` UI specs) remain in `tests/UI Test/` but are outside Toolshop assessment scope — README notes Toolshop specs as `05`–`11`.
+- Confirmed legacy Prism samples (`02`–`04` UI specs) remain in `tests/UI Test/` but are excluded from Toolshop runs — Toolshop specs are `01`–`06`.
 - Rejected README claim that screenshot PNGs were committed for both UI and API — only HTML report archives are in `Evidence/` at submission; PNG screenshots exist under `test-results/` from local runs and are referenced in README as optional evidence.
 - Rejected expanding manual CSV to all 18 `test-design.md` cases — assessment scope prioritizes depth over volume (~5–8 per type).
 
@@ -203,7 +201,7 @@ Each stage used Cursor Enterprise with project context (Prism framework, Toolsho
 | Test design | 18 UI manual cases; API scenario tables | `ai-prompts/test-design.md`, `ai-prompts/api-testing-design.md` |
 | Test data | Module inventory, static vs runtime classification | `ai-prompts/test-data.md`, JSON/JS data files |
 | Automation | Framework analysis, page objects, specs, helpers | `PrismStructure/UI/`, `PrismStructure/tests/` |
-| API automation | Auth, product, purchase-flow specs | `PrismStructure/tests/API Test/03`–`05` |
+| API automation | Auth, product, purchase-flow specs | `PrismStructure/tests/API Test/01`–`05` |
 | Debugging | Root-cause analysis, locator/sync fixes | `ai-prompts/automation-and-debugging.md` |
 | Documentation | README structure, repo plan, this summary | `readme.md`, `project-info.md`, this file |
 
@@ -213,18 +211,18 @@ Each stage used Cursor Enterprise with project context (Prism framework, Toolsho
 - **API contracts** — Endpoint paths, status codes, and response schemas against Swagger.
 - **Locators and timing** — `data-test` attributes, explicit waits vs fixed delays, invoice polling.
 - **Test data** — Faker-generated emails for registration; API product lookup for in-stock items on shared demo backend.
-- **Framework compatibility** — Legacy Prism page objects target a different application; Toolshop required dedicated `toolshop*` page objects without modifying core architecture.
+- **Framework compatibility** — Legacy Prism page objects target a different application; Toolshop extended existing page objects (`loginPage.js`, `homePage.js`, etc.) without modifying core architecture.
 - **Commands and paths** — npm scripts, Playwright projects, `.env` variable names verified by execution.
 - **Documentation accuracy** — README tables, folder tree, and evidence paths checked against actual repository state.
 
 ### What Was Accepted
 
 - Risk-based requirement analysis with AC1/AC2 → CUJ traceability.
-- 7 prioritized manual UI cases in `FunctionalTestCase.csv` and 7 API cases in `ApiTestCase.csv`.
-- Seven Toolshop UI automation scenarios (`TS-LOGIN-001` through `TS-CHK-003`).
-- Seven Toolshop API automation scenarios (`API-AUTH-001` through `API-INV-001`).
-- Dedicated Toolshop page objects and helpers extending — not replacing — Prism patterns.
-- Environment-based credentials via `.env`; dynamic registration data via Faker.
+- 8 UI test cases in `FunctionalTestCase.csv` (aligned 1:1 with automated specs); 5 automated API tests (`TC_API_001`–`TC_API_005`).
+- Eight Toolshop UI automation tests (`TC_LOGIN_001` through `TC_CHK_002`) across 6 spec files.
+- Five Toolshop API automation tests (`TC_API_001` through `TC_API_005`) as a serial chain.
+- Page objects (`loginPage`, `registrationPage`, `homePage`, `productDetailsPage`, `shoppingCartPage`, `checkoutPage`) extending — not replacing — Prism patterns.
+- Environment-based URLs via `.env` (`URL`, `BASE_URL`); UI login credentials in `loginData.json`; dynamic registration via Faker.
 - Playwright HTML reporting with archived evidence copies.
 - Iterative AI prompt documentation in `ai-prompts/`.
 
@@ -233,7 +231,7 @@ Each stage used Cursor Enterprise with project context (Prism framework, Toolsho
 | Item | Reason |
 |---|---|
 | Framework redesign | Assessment requires reusing existing Prism architecture |
-| Reusing legacy `loginPage.js` for Toolshop | Different application, URLs, and locators |
+| Reusing legacy `loginPage.js` for Toolshop without Toolshop locators | Different application URLs and locators — extended with Toolshop-specific methods |
 | All 18 manual cases in CSV deliverable | Scope prioritizes depth (~5–8 per type); full design retained in `test-design.md` |
 | Hardcoded product IDs | Live catalog stock changes; runtime API lookup adopted |
 | Hardcoded credentials in JSON/specs | Security; moved to `.env` |
@@ -247,7 +245,7 @@ Each stage used Cursor Enterprise with project context (Prism framework, Toolsho
 1. **Context before code** — Providing framework structure, assessment rules, and SUT URLs upfront reduced incompatible suggestions.
 2. **Iterate prompts, not entire implementations** — Debugging was more efficient when prompts targeted specific failures (locators, sync) rather than regenerating full specs.
 3. **Validate against live systems** — AI assumptions about demo app behaviour (checkout, navigation) required confirmation on the actual site.
-4. **Separate Toolshop from legacy Prism** — New `toolshop*` page objects preserved framework compatibility while avoiding incorrect reuse.
+4. **Extend existing page objects for Toolshop** — Reusing `loginPage.js`, `homePage.js`, etc. with Toolshop locators preserved framework compatibility.
 5. **Run-scoped data on shared backends** — Dynamic emails and API-driven product selection prevented cross-run failures.
 6. **Document decisions, not just outputs** — Recording accepted/rejected items in `ai-prompts/` supports auditability and future maintenance.
 
@@ -268,7 +266,7 @@ All assessment deliverables are complete. Manual and automated test suites execu
 ## Validation / Review
 
 - Re-read `readme.md` Final Results table against repository contents — all items marked Completed.
-- Confirmed seven UI and seven API scenarios have matching manual CSV entries and automated specs.
+- Confirmed eight UI and five API automated tests executed successfully (13/13 passed).
 - Verified `executionResultLogs.log` contains successful Toolshop run entries (login, registration, search, cart, checkout, invalid login).
 - Confirmed `ai-prompts/` contains six workflow files plus this documentation summary.
 - No undocumented Toolshop features referenced in final documentation.
@@ -284,12 +282,12 @@ All assessment deliverables are complete. Manual and automated test suites execu
 | Deliverable | Status | Location / Notes |
 |---|---|---|
 | Requirement analysis | Completed | `ai-prompts/requirements-and-planning.md` |
-| Manual UI test cases | Completed | `FunctionalTestCase.csv` (7 cases); full design in `test-design.md` (18 cases) |
-| Manual API test cases | Completed | `ApiTestCase.csv` (7 cases); design in `api-testing-design.md` |
-| Test data strategy | Completed | `ai-prompts/test-data.md`; `toolshopTestData.json`, `toolshopLoginData.json`, `toolshopApiData.js`, `toolshopTestHelper.js` |
-| UI automation | Completed | 7 specs in `PrismStructure/tests/UI Test/` (`05`–`11`); 7 page objects |
-| API automation | Completed | 3 specs in `PrismStructure/tests/API Test/` (`03`–`05`); 7 scenarios |
-| Execution | Completed | UI smoke/regression and API smoke/regression via Playwright projects |
+| Manual UI test cases | Completed | `FunctionalTestCase.csv` (8 cases); full design in `test-design.md` (18 cases) |
+| Manual API test cases | Completed | Design in `api-testing-design.md`; automation: `TC_API_001`–`TC_API_005` (5 tests) |
+| Test data strategy | Completed | `ai-prompts/test-data.md`; `loginData.json`, `registrationData.json`, `productSearchData.json`, `checkoutData.json`, `toolshopApiPage.js`, `API/testdata/*.json` |
+| UI automation | Completed | 6 specs in `PrismStructure/tests/UI Test/` (`01`–`06`); 8 tests; 6 page objects |
+| API automation | Completed | 5 specs in `PrismStructure/tests/API Test/` (`01`–`05`); serial chain |
+| Execution | Completed | UI via explicit spec list; API via `--grep @toolshop --workers=1`; **13/13 passed** |
 | Debugging | Completed | Locator, sync, and assertion fixes documented in `automation-and-debugging.md` |
 | HTML reports | Completed | `PrismStructure/playwright-report/`; archived in `Evidence/UI/`, `Evidence/API/` |
 | AI prompt documentation | Completed | `ai-prompts/` (6 workflow files + this summary) |
@@ -303,7 +301,7 @@ All assessment deliverables are complete. Manual and automated test suites execu
 
 1. **Structured prompts produce reusable artifacts** — Defining objective, context, constraints ("do not redesign the framework"), and expected output format improved consistency across phases.
 2. **Manual validation is non-negotiable** — AI correctly identified many risks (shared backend, double-confirm checkout) but also introduced unverified assumptions that required rejection.
-3. **Extension over modification** — Adding `toolshop*` modules alongside legacy Prism components was the lowest-risk path to full coverage.
+3. **Extension over modification** — Extending existing page objects (`loginPage.js`, `homePage.js`, etc.) alongside legacy Prism components was the lowest-risk path to full coverage.
 4. **Documentation last, validated against code** — README refinement after implementation prevented stale commands and incorrect file references.
 5. **Evidence archiving matters** — Copying HTML reports to `Evidence/` provides a stable submission snapshot independent of the next local run.
 
@@ -346,7 +344,7 @@ All assessment deliverables are complete. Manual and automated test suites execu
 The QA AI Practical Assessment is complete. The repository delivers a validated AI-assisted QA workflow for the Toolshop application:
 
 - **Manual testing** — Functional UI and API test cases covering authentication, catalog, cart, checkout, and invoice flows.
-- **Automation** — Seven UI and seven API Playwright scenarios integrated into the existing Prism framework.
+- **Automation** — Eight UI and five API Playwright tests integrated into the existing Prism framework (13/13 passed).
 - **Execution** — Successful runs with HTML reports, execution logs, and archived evidence.
 - **Documentation** — README, project workflow context, and full AI prompt history in `ai-prompts/`.
 

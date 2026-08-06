@@ -1,23 +1,27 @@
 Test ID,Module,Scenario,Preconditions,Test Steps,Expected Result,Priority,Test Type,Test Status
-TS-REG-001,Registration,Enable new customer onboarding with valid account data (Positive),User is logged out; dynamically generated unique email available,"1. Navigate to Register.
-2. Enter valid values in all mandatory fields (unique email, valid password, and remaining required profile fields).
-3. Submit the form.",Registration succeeds with a visible success message or redirect to login. New credentials authenticate successfully on first login attempt. No validation errors displayed.,High,Smoke,Pass
-TS-LOGIN-001,Login,Authenticate returning customer for protected shopping flows (Positive),Registered user exists; user is logged out,"1. Navigate to Login.
-2. Enter valid registered email and password.
-3. Click Sign in.","User lands on Home (or intended destination). Header shows authenticated state (e.g., customer name/profile menu). Protected pages (e.g., Cart, Checkout) are accessible.",High,Smoke,Pass
-TS-SEARCH-001,Product Search,Support product discovery via keyword search (Positive),User on Home/Catalog; target product name/keyword is known,"1. Enter a keyword matching at least one catalog product (e.g., partial product name).
-2. Execute search.",Results list shows one or more matching products. Each visible result contains the keyword (or clear semantic match). Result count is greater than zero.,High,Smoke,Pass
-TS-CART-001,Shopping Cart,Capture purchase intent with correct line-item data (Positive),User logged in; in-stock product identified,"1. From product details, add quantity 1 to cart.
-2. Open Cart.
-3. Verify line item and totals.","Cart contains exactly the selected product with quantity 1, correct unit price, and line subtotal = unit price x 1. Cart badge/count increments by 1. Cart grand total equals line subtotal.",High,Smoke,Pass
-TS-CHK-001,Checkout,Complete revenue-critical COD purchase through invoice (Positive),User logged in; cart has >=1 item; valid billing/shipping test data prepared,"1. From Cart, proceed to Checkout.
-2. Enter valid required billing/shipping fields.
-3. Select Cash on Delivery (or demo COD option).
-4. Click Confirm once, then click Confirm again (known behavior).
-5. Open generated invoice/order receipt.","Order confirmation is displayed after second Confirm. Invoice/receipt is accessible with unique invoice/order ID. Invoice lists correct product name, quantity, unit price, and grand total matching pre-checkout cart values.",High,Smoke,Pass
-TS-LOGIN-002,Login,Block access with invalid credentials (Negative),User is logged out,"1. Navigate to Login.
-2. Enter valid email with wrong password (or unregistered email).
-3. Click Sign in.",Login fails. Error message states invalid credentials (or equivalent). User remains on Login; session is not created; Cart/Checkout remain protected.,High,Regression,Pass
-TS-CHK-003,Checkout,Enforce mandatory checkout field validation (Validation),User logged in; cart has >=1 item; Checkout page open,"1. Clear or leave one or more mandatory checkout fields empty (e.g., address, city, postal code).
-2. Select payment method.
-3. Click Confirm.",Checkout is blocked. Field-level validation errors identify missing/invalid required inputs. No order confirmation and no invoice are generated.,High,Regression,Pass
+TC_LOGIN_001,Login,Successful login with valid registered credentials (Positive),User is logged out; valid seeded credentials available in loginData.json,"1. Navigate to Login page.
+2. Enter valid registered email and password (customer@practicesoftwaretesting.com).
+3. Click Sign in.","User is redirected to /account. ""My account"" heading is visible. Navigation menu and Sign out link are displayed. Session is authenticated.",High,Smoke,Pass
+TC_LOGIN_002,Login,Login with valid email and incorrect password (Negative),User is logged out; invalid password data available in loginData.json,"1. Navigate to Login page.
+2. Enter valid email with incorrect password.
+3. Click Sign in.",Login fails. Error message displays ""Invalid email or password"". User remains on Login page; authenticated session is not created.,High,Regression,Pass
+TC_REG_001,Registration,Register new user with valid data in all required fields (Positive),User is logged out; dynamically generated unique email and password available,"1. Navigate to Register page.
+2. Enter valid values in all mandatory fields (unique email, valid password, and remaining required profile fields from registrationData.json).
+3. Submit the registration form.
+4. Log in with the newly created credentials.","Registration succeeds and user is redirected to Login page. New credentials authenticate successfully on first login attempt. User lands on /account with authenticated state visible.",High,Smoke,Pass
+TC_SEARCH_001,Product Search,Search by exact product name (Positive),User on Home page; search keyword ""Thor Hammer"" is known,"1. Enter search keyword ""Thor Hammer"" in the search field.
+2. Execute search.","Search results list is displayed. At least one result contains the product name ""Thor Hammer"". Result count is greater than zero.",High,Smoke,Pass
+TC_PD_001,Product Details,View core product information on the details page (Positive),User on Home page; product ""Thor Hammer"" is searchable,"1. Search for ""Thor Hammer"".
+2. Open the product from search results.
+3. Review the product details page.","Product name ""Thor Hammer"" is displayed. Unit price is visible and numeric. Product description is visible and not empty. Specifications section and at least one spec row are displayed.",High,Regression,Pass
+TC_CART_001,Shopping Cart,View cart details for a single line item (Positive),User on Home page; product ""Thor Hammer"" is searchable,"1. Search for and open ""Thor Hammer"" from product details.
+2. Add quantity 1 to cart.
+3. Open Cart.
+4. Verify line item and totals.","Cart contains the selected product with quantity 1. Unit price and line price are displayed. Cart total matches the line price. Nav cart badge shows item count of 1.",High,Smoke,Pass
+TC_CHK_001,Checkout,Complete checkout with valid shipping/billing and credit card payment (Positive),Product ""Thor Hammer"" added to cart; guest checkout and billing data prepared in checkoutData.json,"1. From Cart, click Proceed to checkout.
+2. Continue as guest with dynamically generated email and guest user details.
+3. Enter valid billing/shipping address fields.
+4. Select Credit Card payment and enter valid card details.
+5. Click Confirm to submit payment.","Payment success or order confirmation message is displayed (e.g. ""payment was successful"" or ""thanks for your order""). Checkout completes without validation errors.",High,Smoke,Pass
+TC_CHK_002,Checkout,Proceed from cart into checkout shipping step (Positive),Product ""Thor Hammer"" added to cart,"1. From Cart, click Proceed to checkout.
+2. Verify checkout entry screen loads.","Cart total is visible with a dollar amount. Guest checkout tab is available. Guest email and name fields are visible. Billing country field is present. User can proceed into checkout flow from cart.",High,Regression,Pass

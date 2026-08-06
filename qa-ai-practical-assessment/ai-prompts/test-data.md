@@ -21,11 +21,13 @@ AI outputs were reviewed and refined before being accepted into the final implem
 
 | Layer | Location | Purpose |
 |---|---|---|
-| UI static data | `PrismStructure/UI/resources/data/toolshopTestData.json` | Search keywords, billing address, payment method, assertion messages |
-| UI login assertions | `PrismStructure/UI/resources/data/toolshopLoginData.json` | Returning-customer display name and protected routes (no credentials) |
-| API payloads | `PrismStructure/API/pageobjects/toolshopApiData.js` | Endpoints, headers, login/invoice/cart payload builders |
-| Runtime helpers | `PrismStructure/UI/utilities/toolshopTestHelper.js` | Faker-based registration users, API product lookup |
-| Environment | `PrismStructure/.env` / `.env.example` | Base URLs and sensitive credentials |
+| UI login data | `PrismStructure/UI/resources/data/loginData.json` | Valid/invalid credentials and expected error messages |
+| UI registration data | `PrismStructure/UI/resources/data/registrationData.json` | Static profile fields; email/password generated at runtime |
+| UI search/checkout | `PrismStructure/UI/resources/data/productSearchData.json`, `checkoutData.json` | Search keywords, billing fields, payment method |
+| API endpoints | `PrismStructure/API/pageobjects/toolshopApiPage.js` | Endpoints and `authHeaders` / `jsonHeaders` builders |
+| API static payloads | `PrismStructure/API/resources/data/toolshopRegistrationData.json`, `toolshopInvoiceData.json` | Registration and invoice payload templates |
+| API runtime state | `PrismStructure/API/testdata/toolshopRegisteredUser.json`, `toolshopAccessToken.json`, `toolshopSession.json` | Chained state across serial API specs |
+| Environment | `PrismStructure/.env` / `.env.example` | `URL` (API) and `BASE_URL` (UI) |
 | Traceability | `PrismStructure/UI/resources/data/testCasesMeta.json` | Keyword-to-test-ID mapping for annotations |
 
 ---
@@ -46,7 +48,7 @@ For each module, list:
 - Data that must be unique per run vs data that can be reused
 - Dependencies between tests (e.g., login before cart, API token before purchase flow)
 
-Do not redesign the framework. Map recommendations to existing Prism patterns (`UI/resources/data/*.json`, `toolshopTestHelper.js`, `toolshopApiData.js`, `.env`).
+Do not redesign the framework. Map recommendations to existing Prism patterns (`UI/resources/data/*.json`, `API/pageobjects/toolshopApiPage.js`, `API/testdata/*.json`, `.env`).
 
 Return a structured test-data inventory grouped by module.
 
@@ -63,7 +65,7 @@ The AI produced a module-level inventory covering all in-scope journeys:
 | **Checkout** | Billing address, payment method | Payment success message, invoice content | Billing static; order/invoice IDs runtime |
 | **Invalid Login** | Valid-format email + wrong password | `Invalid email or password` message | Email from Faker; password from JSON |
 | **API Auth** | Login payload from env | Token type, expiry, profile email match | Token and profile runtime |
-| **API Purchase** | Cart ID, product ID, billing from profile | Invoice totals, line items | Entire flow chained at runtime via `toolshopContext` |
+| **API Purchase** | Cart ID, product ID, billing from profile | Invoice totals, line items | Entire flow chained at runtime via `API/testdata/*.json` files |
 
 The AI noted that the shared demo environment requires run-scoped unique registration emails to avoid duplicate-account failures, while returning-customer login can reuse the seeded `customer@practicesoftwaretesting.com` account from environment configuration.
 
@@ -71,9 +73,9 @@ The AI noted that the shared demo environment requires run-scoped unique registr
 
 **Accepted** with refinements:
 
-- Inventory aligned to manual test IDs in `test-design.md` (TS-LOGIN-001 through TS-INV-002) and automated specs (`05`–`11` UI, `03`–`05` API).
+- Inventory aligned to test IDs in `FunctionalTestCase.csv` and automated specs (`TC_*` in `01`–`06` UI, `01`–`05` API).
 - Registration and duplicate-email scenarios flagged as **dynamic-only**; no hardcoded registration emails in JSON.
-- Product selection marked **runtime via API** (`getInStockProduct`) rather than hardcoded product IDs, because stock levels change on the live demo site.
+- Product selection marked **runtime via API** (`03_products.spec.js` stores product ID in `toolshopSession.json`) rather than hardcoded product IDs.
 - Checkout billing and payment method approved as **static JSON**—stable, non-sensitive, and shared across UI checkout tests.
 - Returning-customer credentials confirmed as **environment variables**, not committed to repository JSON files.
 
@@ -93,7 +95,7 @@ Also define:
 3. Which values belong in reusable JSON files vs helper functions
 4. How API and UI layers should share data without duplication
 
-Follow Prism framework conventions. Prefer extending `toolshopTestData.json`, `toolshopLoginData.json`, `toolshopApiData.js`, and `toolshopTestHelper.js` over creating new patterns.
+Follow Prism framework conventions. Prefer extending `loginData.json`, `registrationData.json`, `productSearchData.json`, `checkoutData.json`, `toolshopApiPage.js`, and `API/testdata/*.json` over creating new patterns.
 
 Return a classification table and a sensitive-data policy.
 
@@ -103,16 +105,16 @@ Return a classification table and a sensitive-data policy.
 
 | Data Element | Type | Storage | Rationale |
 |---|---|---|---|
-| `TOOLSHOP_EMAIL` / `TOOLSHOP_PASSWORD` | Environment | `.env` | Seeded credentials; sensitive; shared by UI login and API auth |
-| `URL` / `TOOLSHOP_BASE_URL` | Environment | `.env` | Environment-specific; API vs UI base URLs |
-| Search keyword (`Combination`) | Static | `toolshopTestData.json` / `toolshopApiData.js` | Stable catalog term; same value for UI and API search tests |
-| Billing address, payment method | Static | `toolshopTestData.json` | Non-sensitive; repeatable checkout input |
-| Login error message, invalid password | Static | `toolshopTestData.json` / `toolshopApiData.js` | Fixed assertion text and known-bad password |
-| Returning customer display name, protected routes | Static | `toolshopLoginData.json` | Assertion metadata only; ties to seeded user profile |
-| Registration user (name, email, password, address) | Dynamic | `buildRegistrationUser()` in `toolshopTestHelper.js` | Unique per run via `@faker-js/faker` |
-| In-stock product (id, name, price) | Dynamic | `getInStockProduct()` API call | Avoids stale hardcoded product references |
-| Bearer token, cart ID, invoice ID | Dynamic | `toolshopContext` (API runtime) | Created during test execution; not persisted |
-| API payment/invoice payload fields | Static defaults with profile fallback | `toolshopApiData.js` | Reuses `/users/me` address when available |
+| `URL` / `BASE_URL` | Environment | `.env` | API vs UI base URLs |
+| Valid login credentials | Static (demo) | `loginData.json` | Seeded demo user for UI login tests |
+| Invalid login credentials | Static | `loginData.json` | Known-bad password and expected error message |
+| Registration profile fields | Static | `registrationData.json` | Repeatable address/phone/DOB fields |
+| Registration email/password | Dynamic | Generated in `registrationPage.js` spec via Faker | Unique per run on shared backend |
+| Search keyword | Static | `productSearchData.json` | Stable catalog term for UI search |
+| Billing address, payment method | Static | `checkoutData.json` | Non-sensitive checkout input |
+| API registration payload | Static template + dynamic email | `toolshopRegistrationData.json` + Faker in spec | Unique user per API run |
+| Bearer token, cart ID, product ID | Dynamic | `toolshopAccessToken.json`, `toolshopSession.json` | Created during serial API execution |
+| API invoice payload | Static | `toolshopInvoiceData.json` | COD payment fields |
 
 **Sensitive-data policy proposed:**
 
@@ -127,14 +129,13 @@ Return a classification table and a sensitive-data policy.
 
 | Decision | Action |
 |---|---|
-| Credentials externalized | `05_returningCustomerLoginTest.spec.js` and `03_toolshopAuthApi.spec.js` read `process.env.TOOLSHOP_EMAIL` / `TOOLSHOP_PASSWORD` |
-| `.env.example` committed | Documents `URL`, `TOOLSHOP_BASE_URL`, `TOOLSHOP_EMAIL`, `TOOLSHOP_PASSWORD` for local/CI setup |
-| JSON holds assertions only | `toolshopLoginData.json` stores `expectedDisplayName` and `protectedRoutes`; no password field |
-| Faker centralized | Single `buildRegistrationUser()` factory with `prism.auto.{suffix}@mailinator.com` pattern for traceable unique emails |
-| API/UI search parity | Both layers use keyword `Combination` to keep manual, API, and UI search tests consistent |
-| Invalid login hybrid | Dynamic email from `buildRegistrationUser()` + static `invalidPassword` from JSON—ensures valid format with wrong secret |
+| URLs externalized | `.env` holds `URL` and `BASE_URL`; `.env.example` documents `URL` |
+| UI credentials in JSON | `loginData.json` holds demo `validUser` and `invalidPassword` for Toolshop login specs |
+| Registration dynamic | `02_registrationPageTest.spec.js` generates unique email/password via `@faker-js/faker` |
+| API state via JSON files | Serial API specs write/read `toolshopRegisteredUser.json`, `toolshopAccessToken.json`, `toolshopSession.json` |
+| Traceability centralized | `testCasesMeta.json` maps keywords (`login`, `registration`, etc.) to `TC_*` IDs |
 
-**Rejected:** Embedding demo credentials in `toolshopTestData.json` (security risk and violates Prism env pattern).
+**Rejected:** Hardcoded product IDs in specs (catalog stock changes on shared demo backend).
 
 ---
 
@@ -162,39 +163,46 @@ Keep the output concise and implementation-ready.
 
 ```
 PrismStructure/
-├── .env.example                          # Committed template for env vars
-├── .env                                  # Local secrets (not committed)
-├── API/pageobjects/toolshopApiData.js    # API endpoints, headers, payload builders
-├── API/utilities/toolshopContext.js      # Runtime API state (token, cartId, productId)
+├── .env.example                          # Committed template (URL)
+├── .env                                  # Local config: URL, BASE_URL (not committed)
+├── API/pageobjects/toolshopApiPage.js    # Endpoints and header builders
+├── API/resources/data/
+│   ├── toolshopRegistrationData.json     # Registration payload template
+│   └── toolshopInvoiceData.json          # Invoice/COD payload fields
+├── API/testdata/
+│   ├── toolshopRegisteredUser.json       # Runtime — TC_API_001 output
+│   ├── toolshopAccessToken.json          # Runtime — TC_API_002 output
+│   └── toolshopSession.json              # Runtime — product/cart IDs
 ├── UI/resources/data/
-│   ├── toolshopTestData.json             # Shared UI static inputs & assertions
-│   ├── toolshopLoginData.json            # Returning-customer assertion metadata
-│   └── testCasesMeta.json                # Keyword → manual test ID traceability
-└── UI/utilities/toolshopTestHelper.js    # Faker registration + API product resolver
+│   ├── loginData.json                    # Login credentials and error messages
+│   ├── registrationData.json             # Static registration profile fields
+│   ├── productSearchData.json            # Search keyword and assertions
+│   ├── checkoutData.json                 # Billing, payment, success messages
+│   └── testCasesMeta.json                # Keyword → TC_* traceability
 ```
 
 **Runtime data flows:**
 
-*UI Registration (TS-REG-001):*
-`buildRegistrationUser()` → `registerPage.register(user)` → login with same runtime credentials → assert display name on `/account`.
+*UI Registration (TC_REG_001):*
+Faker generates email/password in spec → `registrationData.json` supplies profile fields → register → login with same credentials.
 
-*UI Cart / Checkout (TS-CART-001, TS-CHK-001):*
-`registerAndLogin()` creates fresh user → `getInStockProduct()` fetches live in-stock item → cart/checkout use `toolshopTestData.json` for billing and payment → `confirmOrderTwice()` uses static success message.
+*UI Cart / Checkout (TC_CART_001, TC_CHK_001):*
+`loginData.json` valid user → add product from search → `checkoutData.json` for billing/payment → double-confirm checkout.
 
-*UI Returning Login (TS-LOGIN-001):*
-`process.env` credentials → `toolshopLoginData.json` for display name and protected-route assertions.
+*UI Returning Login (TC_LOGIN_001):*
+`loginData.json` `validUser` → assert authenticated state on home/account.
 
 *API Purchase Flow (serial suite):*
-`loginPayload()` from env → `toolshopContext` stores token, profile, productId, cartId → `invoicePayload(cartId, userProfile)` merges profile address with static payment defaults → assertions on runtime invoice response.
+`TC_API_001` writes `toolshopRegisteredUser.json` → `TC_API_002` writes `toolshopAccessToken.json` → `TC_API_003` stores product in `toolshopSession.json` → `TC_API_004` adds to cart → `TC_API_005` creates invoice with `toolshopInvoiceData.json`.
 
 **Maintainability guidelines:**
 
-- Add new **stable** inputs (messages, addresses, keywords) to `toolshopTestData.json`; import in specs.
-- Add new **credentials or URLs** to `.env.example` and document in README—not in JSON.
-- Add new **unique-per-run** data via `toolshopTestHelper.js` factories, not inline in specs.
-- Add new **API payload shapes** to `toolshopApiData.js` builder functions.
+- Add new **stable** inputs to the appropriate JSON file under `UI/resources/data/` or `API/resources/data/`.
+- Add new **URLs** to `.env.example` and document in README.
+- Add new **unique-per-run** data via Faker in the spec or page object, not hardcoded in JSON.
+- Add new **API endpoints** to `toolshopApiPage.js`.
 - Register new Toolshop test keywords in `testCasesMeta.json` for annotation traceability.
-- Prefer API lookup over hardcoded product IDs when catalog stock may change.
+- Chain API tests via `API/testdata/*.json` files; run API suite with `--workers=1`.
 
 ### Validation / Final Decision
 
@@ -206,14 +214,13 @@ PrismStructure/
 
 | Practice | Implementation |
 |---|---|
-| **Separation of concerns** | Static JSON for repeatable inputs; env for secrets; helpers for generation; context for API runtime state |
-| **No secrets in repo** | Credentials in `.env`; `.env.example` for onboarding; JSON files contain `_comment` guidance only |
+| **Separation of concerns** | Static JSON for repeatable inputs; `.env` for URLs; Faker for unique registration; JSON files for API runtime state |
+| **Demo credentials** | Seeded login user in `loginData.json` for UI; API registration creates fresh user each run |
 | **Shared-environment safety** | Faker-generated unique emails/passwords per registration run |
-| **Data stability** | Catalog search keyword and billing address centralized—single point of update |
-| **Live catalog resilience** | `getInStockProduct()` queries `/products` API; prefers `Bolt Cutters`, falls back to any in-stock item |
-| **API/UI consistency** | Same env credentials and search keyword across layers |
-| **Framework compatibility** | Extends existing Prism `UI/resources/data/` pattern and `dotenv` usage from sample tests |
-| **Traceability** | `testCasesMeta.json` keywords (`toolshop_login`, `toolshop_registration`, etc.) link automation to manual test IDs |
+| **Data stability** | Search keyword and checkout billing centralized in dedicated JSON files |
+| **API chain resilience** | Serial execution with `toolshopRegisteredUser.json` → `toolshopAccessToken.json` → `toolshopSession.json` |
+| **Framework compatibility** | Extends existing Prism `UI/resources/data/` pattern and `dotenv` usage |
+| **Traceability** | `testCasesMeta.json` keywords link automation to `TC_*` test IDs |
 
 ---
 
@@ -221,4 +228,4 @@ PrismStructure/
 
 Test data for the Toolshop assessment was defined through three AI-assisted iterations: inventory of required data, classification with sensitive-data rules, and final structuring within the Prism framework.
 
-The accepted approach keeps **credentials and URLs in environment variables**, **stable business inputs and assertion text in JSON**, and **unique or catalog-dependent values generated at runtime** via `toolshopTestHelper.js` and API context. This balances repeatability, security, and reliability on the shared Practice Software Testing demo environment without modifying the existing framework architecture.
+The accepted approach keeps **base URLs in environment variables**, **stable business inputs and credentials in JSON**, and **unique or chained values generated at runtime** via Faker (UI registration) and serial API JSON files (`API/testdata/*.json`). This balances repeatability, security, and reliability on the shared Practice Software Testing demo environment without modifying the existing framework architecture.

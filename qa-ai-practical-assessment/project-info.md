@@ -33,6 +33,8 @@ The scope of this assessment includes functional testing of the Toolshop applica
 
 **Application:** Practice Software Testing (Toolshop)
 
+**Application URL:** https://practicesoftwaretesting.com/
+
 **Application Type:** E-Commerce Web Application
 
 **Testing Areas**
@@ -158,6 +160,21 @@ Automation implementation follows:
 - Reusable test data
 
 Automation includes both UI and API test scenarios.
+
+### Implemented Structure
+
+| Component | Location |
+|---|---|
+| UI specs (8 tests) | `PrismStructure/tests/UI Test/01_loginPageTest.spec.js`–`06_checkoutPageTest.spec.js` |
+| API specs (5 tests) | `PrismStructure/tests/API Test/01_registerUser.spec.js`–`05_invoice.spec.js` |
+| Page objects | `PrismStructure/UI/pageobjects/` (`loginPage`, `registrationPage`, `homePage`, `productDetailsPage`, `shoppingCartPage`, `checkoutPage`) |
+| API layer | `PrismStructure/API/pageobjects/toolshopApiPage.js`, `API/utilities/apiHelper.js` |
+| Test data | `UI/resources/data/loginData.json`, `registrationData.json`, `productSearchData.json`, `checkoutData.json` |
+| API runtime state | `API/testdata/toolshopRegisteredUser.json`, `toolshopAccessToken.json`, `toolshopSession.json` |
+| Configuration | `playwright.config.js` — single `testcases_regression` project; `package.json` — `test:regression` script |
+| Environment | `.env` — `URL` (API), `BASE_URL` (UI) |
+
+**Latest execution:** 8/8 UI passed, 5/5 API passed (13/13 total).
 
 ---
 

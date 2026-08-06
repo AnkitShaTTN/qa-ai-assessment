@@ -1,0 +1,12 @@
+{
+  "_comment": "Invoice payload for cash-on-delivery. cart_id is set at runtime in TC_API_005.",
+  "cashOnDeliveryInvoice": {
+    "billing_street": "Zoey Shore",
+    "billing_city": "Hesselbury",
+    "billing_state": "Florida",
+    "billing_country": "TG",
+    "billing_postal_code": "1234AA",
+    "payment_method": "cash-on-delivery",
+    "payment_details": {}
+  }
+}
