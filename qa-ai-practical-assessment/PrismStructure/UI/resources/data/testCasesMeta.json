@@ -1,17 +1,80 @@
 {
-    "login": [
-      "__comment: add all your test cases id related to login here and use this keyword in your test case",
-      "PA-12133",
-      "PA-12134", 
-      "PA-12136" 
-    ],
-    "create_system": [
-      "PA-12137"
-    ],
-    "creation_district":[
-     "PA-12138"
-    ],
-    "pdf_verification":[
-      "PA-12139"  
-    ]
-  }
+  "_comment": "Module-keyed test case metadata. Use keyword 'login' with addTestAnnotationsByKeyword in login specs.",
+  "login": [
+    {
+      "module": "Login",
+      "testCaseId": "TC_LOGIN_001",
+      "title": "Positive — Successful login with valid registered credentials",
+      "priority": "High",
+      "smokeRegression": "Smoke"
+    },
+    {
+      "module": "Login",
+      "testCaseId": "TC_LOGIN_002",
+      "title": "Negative — Login with valid email and incorrect password",
+      "priority": "High",
+      "smokeRegression": "Regression"
+    }
+  ],
+  "registration": [
+    {
+      "module": "Registration",
+      "testCaseId": "TC_REG_001",
+      "title": "Positive — Register new user with valid data in all required fields",
+      "priority": "High",
+      "smokeRegression": "Smoke"
+    }
+  ],
+  "product_search": [
+    {
+      "module": "Product Search",
+      "testCaseId": "TC_SEARCH_001",
+      "title": "Positive — Search by exact product name",
+      "priority": "High",
+      "smokeRegression": "Smoke"
+    }
+  ],
+  "product_details": [
+    {
+      "module": "Product Details",
+      "testCaseId": "TC_PD_001",
+      "title": "Positive — View core product information on the details page",
+      "priority": "High",
+      "smokeRegression": "Regression"
+    }
+  ],
+  "shopping_cart": [
+    {
+      "module": "Shopping Cart",
+      "testCaseId": "TC_CART_001",
+      "title": "Positive — View cart details for a single line item",
+      "priority": "High",
+      "smokeRegression": "Smoke"
+    }
+  ],
+  "checkout": [
+    {
+      "module": "Checkout",
+      "testCaseId": "TC_CHK_001",
+      "title": "Positive — Complete checkout with valid shipping/billing and successful payment",
+      "priority": "High",
+      "smokeRegression": "Smoke"
+    },
+    {
+      "module": "Checkout",
+      "testCaseId": "TC_CHK_002",
+      "title": "Positive — Proceed from cart into checkout (shipping step loads)",
+      "priority": "High",
+      "smokeRegression": "Regression"
+    }
+  ],
+  "create_system": [
+    "PA-12137"
+  ],
+  "creation_district": [
+    "PA-12138"
+  ],
+  "pdf_verification": [
+    "PA-12139"
+  ]
+}

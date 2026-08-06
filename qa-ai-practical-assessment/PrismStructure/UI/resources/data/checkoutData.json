@@ -1,0 +1,21 @@
+{
+  "_comment": "Guest checkout test data. Reference: FunctionalTestCase.csv TC_CHK_001 (Credit Card per manual test case). Email is generated at runtime for uniqueness.",
+  "guestUser": {
+    "firstName": "QA",
+    "lastName": "Guest"
+  },
+  "billingAddress": {
+    "street": "Main Street",
+    "houseNumber": "42",
+    "city": "Springfield",
+    "state": "IL",
+    "countryCode": "US",
+    "postalCode": "62701"
+  },
+  "creditCard": {
+    "cardNumber": "4242-4242-4242-4242",
+    "expirationDate": "12/2030",
+    "cvv": "123",
+    "cardHolderName": "QA Guest"
+  }
+}

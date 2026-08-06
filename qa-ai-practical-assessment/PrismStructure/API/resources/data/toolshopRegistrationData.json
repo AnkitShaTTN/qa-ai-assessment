@@ -1,0 +1,17 @@
+{
+  "_comment": "Base registration payload for Toolshop API. Email and password are set at runtime in TC_API_001.",
+  "validRegistration": {
+    "first_name": "QA",
+    "last_name": "Automation",
+    "dob": "1990-05-15",
+    "phone": "1234567890",
+    "address": {
+      "street": "Main Street",
+      "house_number": "42",
+      "city": "Springfield",
+      "state": "IL",
+      "country": "US",
+      "postal_code": "62701"
+    }
+  }
+}

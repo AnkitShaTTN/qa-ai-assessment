@@ -1,7 +1,25 @@
 {
-    "_comment":"this json file serve as input data for login related test cases",
-    "adminlogin":{
-        "username":"jhonlee@mailinator.com",
-        "password":"Welcome@1"
-    }
+  "_comment": "Reusable login test data for the Login module (Practice Software Testing Toolshop). Reference: FunctionalTestCase.csv TC_LOGIN_001–TC_LOGIN_002.",
+  "validUser": {
+    "email": "customer@practicesoftwaretesting.com",
+    "password": "welcome01"
+  },
+  "invalidPassword": {
+    "email": "jhonlee@mailinator.com",
+    "password": "IncorrectPassword@99",
+    "expectedLoginError": "Invalid email or password"
+  },
+  "unregisteredEmail": {
+    "email": "qa.unregistered.user@mailinator.com",
+    "password": "Welcome@1",
+    "expectedLoginError": "Invalid email or password"
+  },
+  "invalidEmailFormat": {
+    "email": "not-a-valid-email",
+    "password": "Welcome@1"
+  },
+  "emptyCredentials": {
+    "email": "",
+    "password": ""
+  }
 }

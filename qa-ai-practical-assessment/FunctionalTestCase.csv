@@ -1,1 +1,27 @@
-
+Test ID,Module,Scenario,Preconditions,Test Steps,Expected Result,Priority,Test Type,Test Status
+TC_LOGIN_001,Login,Successful login with valid registered credentials (Positive),User is logged out; valid seeded credentials available in loginData.json,"1. Navigate to Login page.
+2. Enter valid registered email and password (customer@practicesoftwaretesting.com).
+3. Click Sign in.","User is redirected to /account. ""My account"" heading is visible. Navigation menu and Sign out link are displayed. Session is authenticated.",High,Smoke,Pass
+TC_LOGIN_002,Login,Login with valid email and incorrect password (Negative),User is logged out; invalid password data available in loginData.json,"1. Navigate to Login page.
+2. Enter valid email with incorrect password.
+3. Click Sign in.",Login fails. Error message displays ""Invalid email or password"". User remains on Login page; authenticated session is not created.,High,Regression,Pass
+TC_REG_001,Registration,Register new user with valid data in all required fields (Positive),User is logged out; dynamically generated unique email and password available,"1. Navigate to Register page.
+2. Enter valid values in all mandatory fields (unique email, valid password, and remaining required profile fields from registrationData.json).
+3. Submit the registration form.
+4. Log in with the newly created credentials.","Registration succeeds and user is redirected to Login page. New credentials authenticate successfully on first login attempt. User lands on /account with authenticated state visible.",High,Smoke,Pass
+TC_SEARCH_001,Product Search,Search by exact product name (Positive),User on Home page; search keyword ""Thor Hammer"" is known,"1. Enter search keyword ""Thor Hammer"" in the search field.
+2. Execute search.","Search results list is displayed. At least one result contains the product name ""Thor Hammer"". Result count is greater than zero.",High,Smoke,Pass
+TC_PD_001,Product Details,View core product information on the details page (Positive),User on Home page; product ""Thor Hammer"" is searchable,"1. Search for ""Thor Hammer"".
+2. Open the product from search results.
+3. Review the product details page.","Product name ""Thor Hammer"" is displayed. Unit price is visible and numeric. Product description is visible and not empty. Specifications section and at least one spec row are displayed.",High,Regression,Pass
+TC_CART_001,Shopping Cart,View cart details for a single line item (Positive),User on Home page; product ""Thor Hammer"" is searchable,"1. Search for and open ""Thor Hammer"" from product details.
+2. Add quantity 1 to cart.
+3. Open Cart.
+4. Verify line item and totals.","Cart contains the selected product with quantity 1. Unit price and line price are displayed. Cart total matches the line price. Nav cart badge shows item count of 1.",High,Smoke,Pass
+TC_CHK_001,Checkout,Complete checkout with valid shipping/billing and credit card payment (Positive),Product ""Thor Hammer"" added to cart; guest checkout and billing data prepared in checkoutData.json,"1. From Cart, click Proceed to checkout.
+2. Continue as guest with dynamically generated email and guest user details.
+3. Enter valid billing/shipping address fields.
+4. Select Credit Card payment and enter valid card details.
+5. Click Confirm to submit payment.","Payment success or order confirmation message is displayed (e.g. ""payment was successful"" or ""thanks for your order""). Checkout completes without validation errors.",High,Smoke,Pass
+TC_CHK_002,Checkout,Proceed from cart into checkout shipping step (Positive),Product ""Thor Hammer"" added to cart,"1. From Cart, click Proceed to checkout.
+2. Verify checkout entry screen loads.","Cart total is visible with a dollar amount. Guest checkout tab is available. Guest email and name fields are visible. Billing country field is present. User can proceed into checkout flow from cart.",High,Regression,Pass
