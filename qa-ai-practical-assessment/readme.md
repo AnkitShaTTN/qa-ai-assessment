@@ -461,7 +461,6 @@ Project workflow context: `project-info.md`
 | Deliverable | Status | Summary |
 |---|---|---|
 | **Manual UI Test Cases** | Completed | 7 cases in `FunctionalTestCase.csv` — Registration, Login, Search, Cart, Checkout (smoke + regression) |
-| **Manual API Test Cases** | Completed | 7 cases in `ApiTestCase.csv` — Auth, Product Catalog, Search, Cart, Checkout, Invoice |
 | **UI Automation** | Completed | 7 Toolshop scenarios (`05_returningCustomerLoginTest.spec.js` through `11_toolshopCheckoutValidationTest.spec.js`) |
 | **API Automation** | Completed | 7 Toolshop scenarios across `03_toolshopAuthApi.spec.js`, `04_toolshopProductApi.spec.js`, `05_toolshopPurchaseFlowApi.spec.js` |
 | **HTML Reports Generated** | Completed | `PrismStructure/playwright-report/`; archived in `Evidence/UI/` and `Evidence/API/` |
