@@ -1,5 +1,0 @@
-{
-  "new_string": "**Validation Notes:**\n\n- Verified all 19 refined test cases were exported (superseded by Prompt Iteration 4 — final CSV contains 7 approved cases).\n- Confirmed all mandatory columns were present.\n- Verified no duplicate Test IDs.\n- Opened the CSV in Microsoft Excel.\n- Confirmed multiline test steps rendered correctly.\n- Verified CSV matched the Iteration 2 Markdown version exactly.",
-  "old_string": "**Validation Notes:**\n\n- Verified all 19 approved test cases were exported.\n- Confirmed all mandatory columns were present.\n- Verified no duplicate Test IDs.\n- Opened the CSV in Microsoft Excel.\n- Confirmed multiline test steps rendered correctly.\n- Verified CSV matched the approved Markdown version exactly.",
-  "path": "c:\\qa-ai-practical-assessment\\qa-ai-practical-assessment\\ai-prompts\\test-design.md"
-}
